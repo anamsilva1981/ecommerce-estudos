@@ -2,7 +2,7 @@
 
 ## Propósito deste documento
 
-Este documento é um **guia de aprendizagem e execução** para a primeira etapa do e-commerce.
+Este documento é um **guia de aprendizagem e execução** para a primeira etapa do projeto de **mercado online**.
 
 O objetivo não é entregar uma arquitetura pronta para ser copiada. A proposta é orientar o raciocínio necessário para que a pessoa responsável pelo Frontend consiga:
 
@@ -20,57 +20,61 @@ O objetivo não é entregar uma arquitetura pronta para ser copiada. A proposta 
 
 # 1. Resultado esperado da Ordem 1
 
-Ao terminar esta etapa, o Frontend ainda não precisa ter o e-commerce funcional.
+Ao terminar esta etapa, o Frontend ainda não precisa ter o mercado online funcional.
 
 O que precisa existir é uma base técnica suficientemente clara para que as próximas funcionalidades possam ser construídas sem reorganizar o projeto a cada nova tela.
 
 Ao final, deve estar definido e funcionando:
 
 - aplicação Frontend criada e executando localmente;
+- **Next.js utilizado como framework principal do Frontend**;
+- versão do Next.js registrada;
 - estratégia de organização de pastas;
 - separação entre área do Cliente e área Administrativa;
 - estratégia de rotas;
 - layouts principais;
-- tema e tokens visuais iniciais;
-- Design System inicial;
+- estratégia visual inicial;
+- decisão sobre biblioteca de componentes, se for adotada;
 - componentes compartilhados essenciais;
 - convenções de código;
 - configuração de ambientes;
-- estratégia inicial de comunicação com a API;
+- estratégia inicial de comunicação com o Backend;
 - regras mínimas de qualidade;
 - critérios objetivos para considerar a fundação concluída.
 
 ---
 
-# 2. Antes de começar: decisões de contexto
+# 2. Decisão já tomada: Next.js
 
-Antes de criar pastas ou componentes, registrar as decisões básicas do projeto.
+A tecnologia principal do Frontend será **Next.js**.
 
-## 2.1 Framework e versão
+Essa escolha faz parte do objetivo de aprendizagem do projeto. Portanto, este documento não tratará Next.js como uma opção a ser comparada com outros frameworks antes da implementação.
 
-### Pergunta que precisa ser respondida
+O que ainda precisa ser estudado dentro do próprio Next.js:
 
-Qual tecnologia será usada no Frontend e qual versão?
+- versão que será utilizada;
+- estrutura recomendada pelo framework;
+- sistema de roteamento;
+- layouts;
+- renderização no servidor e no cliente;
+- Server Components e Client Components;
+- carregamento de dados;
+- tratamento de erros;
+- variáveis de ambiente;
+- convenções de projeto.
 
-### O que estudar
-
-- diferença entre framework e biblioteca;
-- ciclo de vida e suporte de versões;
-- documentação oficial da tecnologia escolhida;
-- convenções recomendadas pelo próprio framework.
-
-### Decisão a registrar
+## Registro
 
 ```text
-Framework:
-Versão:
-Motivo da escolha:
-Documentação oficial:
+Framework: Next.js
+Versão: a definir no início da implementação
+Motivo principal: aprendizado prático de Next.js em um projeto realista
+Documentação oficial: registrar durante o estudo
 ```
 
 ### Critério de validação
 
-Você deve conseguir explicar por que essa tecnologia foi escolhida sem responder apenas “porque eu já conheço”.
+Você deve conseguir explicar quais responsabilidades o Next.js assume no projeto e como sua estrutura influencia rotas, layouts e componentes.
 
 ---
 
@@ -80,215 +84,127 @@ Você deve conseguir explicar por que essa tecnologia foi escolhida sem responde
 
 Decidir como o código será organizado para que seja fácil localizar, evoluir e manter as funcionalidades.
 
-Não comece criando pastas aleatoriamente. Primeiro compare estratégias.
+A estrutura não deve ser copiada de um exemplo sem entender o motivo.
 
-## 3.1 Opção A — Organização por tipo técnico
+## Estratégias a estudar
 
-Exemplo:
+### Opção A — Organização por tipo técnico
+
+Exemplo conceitual:
 
 ```text
-src/
-├── components/
-├── pages/
-├── services/
-├── models/
-├── hooks/
-└── utils/
+components/
+services/
+hooks/
+types/
+utils/
 ```
-
-### Característica
 
 Arquivos semelhantes ficam juntos pelo tipo técnico.
 
-### Vantagens
+### Opção B — Organização por feature
 
-- simples de entender em projetos pequenos;
-- estrutura inicial familiar;
-- fácil localizar “todos os services” ou “todos os components”.
-
-### Desvantagens
-
-- conforme o sistema cresce, uma única funcionalidade fica espalhada em muitas pastas;
-- aumenta o custo para entender tudo que pertence a um domínio;
-- pode gerar pastas enormes.
-
-### Pergunta para reflexão
-
-Se você precisar alterar completamente a funcionalidade de produtos, quantas pastas diferentes terá que abrir?
-
----
-
-## 3.2 Opção B — Organização por feature
-
-Exemplo:
+Exemplo conceitual:
 
 ```text
-src/
-├── features/
-│   ├── products/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── models/
-│   ├── cart/
-│   └── checkout/
+features/
+  products/
+  cart/
+  checkout/
 ```
 
-### Característica
+Tudo que pertence a uma funcionalidade fica próximo.
 
-Tudo que pertence à mesma funcionalidade fica próximo.
+### Opção C — Organização híbrida
 
-### Vantagens
+Combina a estrutura nativa do Next.js com organização por domínio e recursos compartilhados.
 
-- boa escalabilidade organizacional;
-- facilita manutenção por funcionalidade;
-- reduz acoplamento entre áreas;
-- torna mais claro o que pertence a cada domínio.
-
-### Desvantagens
-
-- exige critérios claros para decidir o que é compartilhado;
-- pode gerar duplicação se a equipe mover cedo demais coisas reutilizáveis para dentro de features.
-
-### Pergunta para reflexão
-
-Um `ProductCard` pertence exclusivamente à feature de produtos ou será reutilizado na Home, busca e favoritos?
-
----
-
-## 3.3 Opção C — Organização híbrida
-
-Exemplo:
+Exemplo apenas para estudo:
 
 ```text
 src/
 ├── app/
-├── store/
-│   ├── home/
-│   ├── catalog/
-│   ├── product/
-│   ├── cart/
-│   └── checkout/
-├── admin/
-│   ├── dashboard/
-│   ├── products/
-│   ├── categories/
-│   └── orders/
-├── shared/
-│   ├── components/
-│   ├── services/
-│   ├── models/
-│   └── utils/
-└── assets/
+├── features/
+├── components/
+├── services/
+├── types/
+└── lib/
 ```
 
-### Característica
+> Esta estrutura é apenas um exemplo. A organização definitiva será decidida depois do estudo das convenções do Next.js.
 
-O projeto é separado por grandes contextos de negócio e mantém uma área explícita para recursos realmente compartilhados.
-
-### Vantagens
-
-- deixa Cliente e Admin claramente separados;
-- permite organizar funcionalidades internamente por domínio;
-- facilita crescimento sem concentrar tudo em uma pasta global;
-- combina organização de negócio com reutilização.
-
-### Desvantagens
-
-- exige disciplina para não transformar `shared` em depósito de arquivos;
-- algumas decisões de fronteira podem ser subjetivas.
-
----
-
-## 3.4 Decisão obrigatória
-
-Antes de implementar, preencher:
+## Decisões que precisam ser tomadas
 
 ```text
 Estratégia escolhida:
-
-Por que ela faz sentido para este e-commerce:
-
+Por que ela faz sentido para o mercado online:
 Quais alternativas foram descartadas:
-
 Por que foram descartadas:
-
-Regra para algo entrar em shared:
+Regra para algo ser compartilhado:
 ```
 
-## 3.5 Validação de aprendizagem
+## Validação de aprendizagem
 
 Você deve conseguir responder:
 
-- Qual diferença existe entre organização por tipo e por feature?
-- Por que uma arquitetura pode funcionar bem em um projeto pequeno e mal em um projeto grande?
-- O que caracteriza algo como compartilhado?
-- Em qual pasta entraria uma nova funcionalidade de favoritos?
-- Em qual pasta entraria um botão reutilizado pelo Cliente e pelo Admin?
+- qual diferença existe entre organização por tipo e por feature;
+- como o diretório `app` do Next.js influencia a arquitetura;
+- quando algo pertence a uma feature;
+- quando algo realmente deve ser compartilhado.
 
 ---
 
-# 4. Separação das duas frentes do Frontend
+# 4. Separação Cliente e Admin
 
-O e-commerce terá pelo menos dois grandes contextos visuais.
+O mercado online terá dois grandes contextos visuais.
 
-## Store / Cliente
+## Cliente
 
-É a parte utilizada pelo comprador.
+Área utilizada por quem compra.
 
 Exemplos futuros:
 
 - Home;
 - catálogo;
+- categorias;
 - produto;
 - busca;
 - carrinho;
 - checkout;
-- minha conta;
+- conta;
 - pedidos.
 
 ## Admin
 
-É a parte utilizada pela operação da loja.
+Área utilizada pela operação e, futuramente, pelo proprietário do mercado.
 
 Exemplos futuros:
 
-- dashboard;
-- categorias;
-- marcas;
 - produtos;
+- categorias;
+- preços;
 - estoque;
 - pedidos;
 - clientes;
-- promoções.
+- promoções;
+- dashboard gerencial.
 
-## Pergunta de arquitetura
+## Decisão arquitetural a estudar
 
-Cliente e Admin ficarão:
+Cliente e Admin poderão ficar:
 
-1. no mesmo projeto Frontend, separados por módulos/áreas; ou
-2. em aplicações Frontend diferentes?
+1. na mesma aplicação Next.js, separados por rotas e layouts; ou
+2. em aplicações diferentes.
 
-## O que estudar antes de decidir
+Para o projeto de estudo, essa escolha ainda deve ser analisada antes da implementação definitiva.
 
-- SPA;
-- modularização;
-- múltiplas aplicações;
-- compartilhamento de código;
-- deploy independente;
-- complexidade operacional.
-
-## Decisão a registrar
+## Registro
 
 ```text
 Estratégia Cliente/Admin:
-
 Motivo:
-
 Consequências da decisão:
 ```
-
-> Para esta etapa de estudos, a decisão deve privilegiar clareza de arquitetura e aprendizagem, não complexidade de infraestrutura sem necessidade.
 
 ---
 
@@ -296,33 +212,28 @@ Consequências da decisão:
 
 ## Objetivo
 
-Definir como o usuário navegará pela aplicação e como Cliente e Admin serão separados.
+Entender como o Next.js organiza navegação e URLs antes de criar as telas.
 
-Não é necessário implementar todas as rotas futuras agora.
+## O que estudar
 
-Primeiro deve existir um **mapa de rotas**.
-
-## 5.1 Conceitos a estudar
-
-- roteamento client-side;
-- rota estática;
-- rota dinâmica;
-- parâmetros de rota;
-- query parameters;
-- rotas aninhadas;
-- lazy loading;
+- App Router;
+- segmentos de rota;
+- rotas dinâmicas;
+- route groups;
+- layouts aninhados;
+- páginas de erro;
+- página 404;
 - rotas públicas;
-- rotas privadas/protegidas;
-- fallback / 404.
+- rotas protegidas futuramente.
 
-## 5.2 Rotas iniciais candidatas
+## Mapa inicial candidato
 
 ### Cliente
 
 ```text
 /
 /produtos
-/produtos/:id
+/produtos/[id]
 ```
 
 ### Admin
@@ -331,204 +242,128 @@ Primeiro deve existir um **mapa de rotas**.
 /admin
 /admin/produtos
 /admin/produtos/novo
-/admin/produtos/:id/editar
+/admin/produtos/[id]/editar
 ```
 
-Essas rotas representam a estrutura inicial, mas algumas telas só serão implementadas nas ordens seguintes.
+Essas rotas servem como ponto de estudo e podem ser alteradas quando a estratégia de arquitetura for decidida.
 
-## 5.3 Rotas futuras — não implementar agora
-
-Exemplos:
-
-```text
-/login
-/cadastro
-/carrinho
-/checkout
-/minha-conta
-/meus-pedidos
-/admin/pedidos
-/admin/clientes
-```
-
-## 5.4 Decisões que precisam ser tomadas
-
-```text
-Padrão de URL do Cliente:
-Padrão de URL do Admin:
-Convenção para parâmetros dinâmicos:
-Estratégia para 404:
-Estratégia futura para rotas protegidas:
-Será usado lazy loading? Onde?
-```
-
-## 5.5 Validação de aprendizagem
+## Validação
 
 Você deve conseguir explicar:
 
-- por que `/produtos/:id` é diferente de `/produtos`;
-- quando usar query parameter e quando usar parâmetro de rota;
-- por que uma rota administrativa precisará futuramente de proteção;
-- por que não é necessário criar todas as rotas do projeto na Ordem 1.
+- como uma pasta dentro de `app` pode gerar uma rota;
+- como funciona uma rota dinâmica no Next.js;
+- como Cliente e Admin podem possuir layouts diferentes;
+- por que não é necessário criar todas as rotas futuras agora.
 
 ---
 
 # 6. Layout base
 
-## O que significa “layout base”
+## O que é
 
-Layout base é a estrutura visual persistente que envolve o conteúdo das páginas.
+Layout base é a estrutura visual persistente que envolve diferentes páginas.
 
-Ele evita repetir Header, Navbar, Footer ou Sidebar em cada tela.
+No mercado online, provavelmente existirão pelo menos dois contextos:
 
-## 6.1 StoreLayout
+### Layout do Cliente
 
-Exemplo conceitual:
-
-```text
-┌──────────────────────────────────┐
-│ Header                           │
-├──────────────────────────────────┤
-│ Navbar                           │
-├──────────────────────────────────┤
-│                                  │
-│ Conteúdo da rota atual           │
-│                                  │
-├──────────────────────────────────┤
-│ Footer                           │
-└──────────────────────────────────┘
-```
-
-O conteúdo central muda conforme a rota.
-
-## 6.2 AdminLayout
-
-Exemplo conceitual:
+Pode conter futuramente:
 
 ```text
-┌──────────────┬───────────────────────────┐
-│              │ Header administrativo    │
-│ Sidebar      ├───────────────────────────┤
-│              │                           │
-│              │ Conteúdo da rota atual    │
-│              │                           │
-└──────────────┴───────────────────────────┘
+Header
+Navegação
+Conteúdo da página
+Footer
 ```
 
-## 6.3 O que estudar
+### Layout do Admin
 
-- composição de componentes;
+Pode conter futuramente:
+
+```text
+Header administrativo
+Sidebar ou navegação administrativa
+Conteúdo da página
+```
+
+## O que estudar no Next.js
+
+- `layout.tsx`;
 - layouts aninhados;
-- outlet/router outlet equivalente do framework;
-- responsabilidade de componentes estruturais;
-- responsividade de layout.
+- composição;
+- route groups;
+- diferenças entre layout e página;
+- persistência de elementos entre navegações.
 
-## 6.4 Decisões a registrar
+## Decisão a registrar
 
 ```text
-Layouts iniciais:
-
-O que pertence ao StoreLayout:
-
-O que pertence ao AdminLayout:
-
+Quais layouts existirão inicialmente:
+O que pertence ao layout do Cliente:
+O que pertence ao layout do Admin:
 O que não deve ficar dentro dos layouts:
 ```
 
-## 6.5 Validação
-
-Se Header ou Footer mudar, você deve conseguir alterar uma única implementação e refletir a mudança em todas as páginas que usam aquele layout.
-
 ---
 
-# 7. Tema e Design System inicial
+# 7. Estratégia visual e biblioteca de componentes
 
-## Objetivo
+A biblioteca de componentes **ainda não está decidida**.
 
-Criar regras visuais reutilizáveis antes de cada tela inventar sua própria solução.
+Antes de escolher, deve existir uma etapa de estudo.
 
-Nesta fase não é necessário construir um Design System completo.
+## O que comparar
 
-## 7.1 Primeiro: entender tokens
+- compatibilidade com Next.js;
+- acessibilidade;
+- facilidade de customização;
+- qualidade da documentação;
+- quantidade de abstração;
+- impacto no aprendizado;
+- manutenção;
+- integração com a estratégia de estilos escolhida.
 
-Estudar:
+## Exemplos de alternativas para pesquisar
 
-- design tokens;
-- cores semânticas;
-- escala tipográfica;
-- espaçamento;
-- border radius;
-- breakpoints;
-- estados de interação;
-- contraste;
-- responsividade.
+- shadcn/ui;
+- Material UI;
+- Chakra UI;
+- criação de componentes próprios quando fizer sentido.
 
-## 7.2 Tokens candidatos
+Esses nomes são apenas candidatas para comparação. **Nenhuma delas está definida como escolha do projeto neste momento.**
 
-### Cores
+## Outras decisões futuras
 
-```text
-primary
-secondary
-background
-surface
-text-primary
-text-secondary
-success
-warning
-error
-```
+Também deverão ser estudadas antes de serem registradas como padrão:
 
-### Tipografia
+- Tailwind CSS ou outra estratégia de estilos;
+- tokens visuais;
+- tema;
+- tipografia;
+- cores;
+- espaçamentos;
+- breakpoints.
 
-```text
-font-family
-font-size-xs
-font-size-sm
-font-size-md
-font-size-lg
-font-size-xl
-font-weight-regular
-font-weight-medium
-font-weight-bold
-```
-
-### Espaçamento
-
-Definir uma escala coerente, em vez de usar valores aleatórios em cada componente.
-
-### Outros
+## Registro
 
 ```text
-border-radius
-shadow
-breakpoints
-z-index
-```
-
-## 7.3 Decisão a registrar
-
-```text
-Estratégia de tema:
-
-Onde os tokens ficarão:
-
-Como serão nomeados:
-
-Como Cliente e Admin compartilharão tokens:
+Biblioteca de componentes escolhida:
+Alternativas analisadas:
+Motivo da escolha:
+Estratégia de estilos:
+Motivo:
 ```
 
 ---
 
 # 8. Componentes compartilhados iniciais
 
-## Regra principal
+Não criar dezenas de componentes antecipadamente.
 
-Não construir dezenas de componentes “porque talvez sejam usados”.
+Criar apenas os necessários para validar a fundação e as primeiras funcionalidades.
 
-Criar apenas o que já possui justificativa arquitetural.
-
-## Candidatos iniciais
+Possíveis candidatos futuros:
 
 ```text
 Button
@@ -539,335 +374,263 @@ Loading
 ErrorMessage
 EmptyState
 Modal
-```
-
-Elementos de layout:
-
-```text
 Header
-Navbar
 Footer
 Sidebar
 ```
 
-## Perguntas antes de criar um componente compartilhado
+A lista definitiva dependerá da biblioteca de componentes e da arquitetura escolhidas.
 
-- Ele será usado em mais de um contexto?
-- Existe uma regra visual ou comportamental que precisa permanecer consistente?
-- É realmente um componente genérico ou pertence a uma feature?
+## Perguntas antes de compartilhar um componente
 
-## O que estudar
-
-- componentização;
-- composição;
-- props/inputs;
-- responsabilidade única;
-- controlled/uncontrolled components, se aplicável;
-- acessibilidade de componentes.
+- ele será usado em mais de um contexto?
+- existe comportamento ou aparência que precisa permanecer consistente?
+- ele é realmente genérico ou pertence a uma feature específica?
 
 ---
 
 # 9. Convenções do projeto
 
-## Objetivo
+Definir convenções para evitar que cada funcionalidade introduza uma forma diferente de escrever código.
 
-Evitar que cada nova funcionalidade introduza uma forma diferente de escrever e organizar código.
-
-## Decisões iniciais
-
-Definir convenções para:
+Itens a estudar e decidir:
 
 - nomes de arquivos;
 - nomes de componentes;
-- nomes de services;
 - organização de imports;
-- aliases de importação;
+- aliases;
 - tipagem;
 - tratamento de erros;
-- estados de loading;
-- comentários;
+- loading states;
 - branches;
 - commits;
-- pull requests.
+- pull requests;
+- lint;
+- formatter.
 
-## Ferramentas candidatas
-
-- ESLint;
-- Prettier;
-- formatter/linter específico do framework, se houver;
-- hooks de Git, se fizer sentido.
-
-## Validação
-
-O projeto deve conseguir detectar automaticamente pelo menos parte dos desvios de padrão.
+O próprio ecossistema do Next.js deve ser considerado antes de escolher ferramentas adicionais.
 
 ---
 
 # 10. Configuração de ambientes
 
-## Objetivo
+## O que estudar
 
-Permitir que o mesmo código se conecte a configurações diferentes sem alterar valores manualmente no código-fonte.
+- variáveis de ambiente no Next.js;
+- diferença entre variáveis públicas e privadas;
+- `.env`;
+- configuração de desenvolvimento e produção;
+- secrets;
+- valores que nunca devem ser commitados.
 
-## Ambientes candidatos
-
-```text
-development
-staging / homologation
-production
-```
-
-## Variáveis iniciais candidatas
+## Possíveis variáveis futuras
 
 ```text
 API_URL
 APP_ENV
 ```
 
-## O que estudar
-
-- environment variables;
-- build-time versus runtime configuration;
-- `.env`;
-- secrets;
-- por que credenciais não devem ser commitadas.
-
-## Decisões a registrar
-
-```text
-Ambientes existentes inicialmente:
-
-Convenção dos arquivos de ambiente:
-
-Quais variáveis o Frontend precisa:
-
-Quais valores jamais podem ir para o repositório:
-```
+Os nomes definitivos serão decididos quando a integração com o Backend for estudada.
 
 ---
 
 # 11. Comunicação com o Backend
 
-Mesmo que a API ainda não esteja pronta, a aplicação deve ter uma estratégia definida para comunicação HTTP.
+O Backend ainda não precisa estar tecnicamente definido nesta Ordem 1.
+
+O importante nesta etapa é compreender como o Frontend Next.js consumirá uma API externa futuramente.
 
 ## O que estudar
 
 - HTTP;
-- métodos GET, POST, PUT/PATCH e DELETE;
+- GET, POST, PUT/PATCH e DELETE;
+- request e response;
 - status codes;
-- request/response;
 - DTOs;
 - tratamento de erros;
-- interceptors/middlewares, quando aplicável;
-- timeout;
-- loading state.
+- carregamento de dados no Next.js;
+- comunicação feita no servidor ou no cliente;
+- caching e revalidação em nível introdutório.
 
-## Possível separação
+## Decisões que ficam para depois
 
-```text
-api/
-services/
-models/
-```
-
-## Decisões a tomar
-
-- componentes podem chamar HTTP diretamente?
-- haverá uma camada de services?
-- onde ficarão os tipos de request e response?
-- como erros serão normalizados?
-- como a URL base da API será configurada?
-
-## Regra candidata
-
-> Componentes de interface não devem conhecer detalhes de transporte HTTP além do necessário. A comunicação com a API deve ficar encapsulada em uma camada apropriada.
-
-Essa regra deve ser estudada e validada antes de ser adotada definitivamente.
+- tecnologia definitiva do Backend;
+- estrutura da API;
+- camada de services;
+- cliente HTTP;
+- autenticação;
+- política de cache;
+- contratos definitivos.
 
 ---
 
-# 12. Responsividade inicial
+# 12. Responsividade
 
-## Objetivo
-
-A fundação não precisa entregar todas as telas responsivas, mas deve definir como o projeto tratará diferentes tamanhos de viewport.
+A fundação deve definir como o projeto pensará diferentes tamanhos de tela, mas não precisa entregar todas as páginas prontas.
 
 ## O que estudar
 
 - mobile first;
 - desktop first;
+- layouts fluidos;
+- grid e flexbox;
 - breakpoints;
-- fluid layouts;
-- container width;
-- grid/flex;
-- imagens responsivas.
+- imagens responsivas;
+- componente `Image` do Next.js.
 
-## Decisões a registrar
+## Registro
 
 ```text
 Estratégia responsiva:
-Breakpoints iniciais:
+Breakpoints:
 Largura máxima de conteúdo:
-Comportamento esperado do StoreLayout no mobile:
-Comportamento esperado do AdminLayout no mobile:
+Comportamento esperado da área Cliente:
+Comportamento esperado da área Admin:
 ```
 
 ---
 
-# 13. Acessibilidade mínima da fundação
+# 13. Acessibilidade mínima
 
-Acessibilidade não deve entrar apenas no final do projeto.
+Acessibilidade deve ser considerada desde os componentes básicos.
 
-## O que estudar nesta etapa
+Estudar:
 
 - HTML semântico;
 - navegação por teclado;
 - foco visível;
-- labels de formulário;
+- labels;
 - contraste;
-- uso correto de button e link;
-- landmarks básicos.
+- diferença entre botão e link;
+- landmarks.
 
-## Regra
-
-Componentes básicos criados na fundação devem nascer com comportamento acessível, para não multiplicar problemas nas telas futuras.
+A escolha futura da biblioteca de componentes também deverá considerar acessibilidade.
 
 ---
 
 # 14. Testes da fundação
 
-Não é necessário criar uma suíte completa nesta etapa, mas a estratégia inicial deve ser compreendida.
-
-## O que estudar
+A estratégia de testes ainda será definida, mas é necessário compreender os níveis principais:
 
 - teste unitário;
 - teste de componente;
-- teste de integração;
-- E2E;
-- diferença entre testar comportamento e implementação.
+- integração;
+- E2E.
 
-## O que pode ser validado agora
+Nesta etapa, o mínimo a validar é:
 
-- aplicação inicia;
-- rotas base carregam;
-- StoreLayout renderiza corretamente;
-- AdminLayout renderiza corretamente;
-- componentes básicos possuem comportamento esperado;
-- página 404 funciona, se implementada nesta etapa.
+- aplicação Next.js inicia;
+- build funciona;
+- rotas base funcionam;
+- layouts escolhidos funcionam;
+- estrutura de pastas está coerente com a decisão tomada.
 
 ---
 
 # 15. Plano de execução sugerido
 
-Esta é a ordem prática recomendada **depois de estudar e registrar as decisões anteriores**.
+## Bloco A — Next.js
 
-## Bloco A — Inicialização
-
-- [ ] Criar o projeto Frontend.
-- [ ] Confirmar versão do framework e runtime.
-- [ ] Configurar TypeScript, se aplicável.
-- [ ] Garantir que aplicação executa localmente.
-- [ ] Garantir que o build inicial funciona.
+- [ ] Estudar a estrutura básica atual do Next.js.
+- [ ] Escolher a versão a utilizar.
+- [ ] Criar a aplicação.
+- [ ] Executar localmente.
+- [ ] Validar o build inicial.
 
 ## Bloco B — Arquitetura
 
-- [ ] Escolher estratégia de organização de pastas.
-- [ ] Registrar justificativa.
-- [ ] Criar estrutura mínima de pastas.
-- [ ] Definir separação Cliente/Admin.
+- [ ] Estudar as estratégias de organização de pastas.
+- [ ] Entender as convenções do `app`.
+- [ ] Escolher e registrar a arquitetura.
+- [ ] Decidir a separação Cliente/Admin.
 
-## Bloco C — Navegação
+## Bloco C — Navegação e layouts
 
-- [ ] Definir mapa inicial de rotas.
-- [ ] Criar roteamento base.
-- [ ] Criar StoreLayout.
-- [ ] Criar AdminLayout.
-- [ ] Criar páginas placeholder somente quando forem necessárias para validar navegação.
+- [ ] Estudar App Router.
+- [ ] Criar o mapa inicial de rotas.
+- [ ] Estudar `layout.tsx` e layouts aninhados.
+- [ ] Criar apenas a estrutura necessária para validar Cliente e Admin.
 
 ## Bloco D — Base visual
 
-- [ ] Definir tokens iniciais.
-- [ ] Configurar tema.
-- [ ] Criar componentes estruturais necessários.
-- [ ] Criar apenas os componentes compartilhados realmente justificáveis.
+- [ ] Comparar alternativas de biblioteca de componentes.
+- [ ] Comparar estratégias de estilos.
+- [ ] Registrar as escolhas.
+- [ ] Criar somente os componentes essenciais para a próxima etapa.
 
 ## Bloco E — Infraestrutura de Frontend
 
-- [ ] Configurar ambientes.
-- [ ] Configurar URL base da API.
-- [ ] Definir camada de services/API.
-- [ ] Configurar aliases/imports, se adotados.
-- [ ] Configurar lint/formatter.
+- [ ] Definir convenções básicas.
+- [ ] Estudar variáveis de ambiente.
+- [ ] Preparar a aplicação para futura comunicação com API.
+- [ ] Configurar lint/formatter conforme a decisão tomada.
 
 ## Bloco F — Validação
 
-- [ ] Executar lint.
-- [ ] Executar testes existentes.
+- [ ] Rodar o projeto.
 - [ ] Executar build.
 - [ ] Navegar pelas rotas base.
-- [ ] Validar StoreLayout.
-- [ ] Validar AdminLayout.
-- [ ] Validar comportamento inicial em desktop e mobile.
+- [ ] Validar os layouts.
+- [ ] Revisar as decisões registradas.
 
 ---
 
 # 16. Critérios de aceite da Ordem 1
 
-A Ordem 1 pode ser considerada concluída quando:
+A Ordem 1 estará concluída quando:
 
-- [ ] A aplicação Frontend executa localmente sem erro.
-- [ ] A estratégia de arquitetura de pastas foi estudada, escolhida e justificada.
-- [ ] Cliente e Admin possuem separação arquitetural clara.
-- [ ] O mapa inicial de rotas está documentado.
-- [ ] As rotas necessárias para validar a arquitetura funcionam.
-- [ ] StoreLayout existe e funciona.
-- [ ] AdminLayout existe e funciona.
-- [ ] Tema/tokens iniciais estão definidos.
-- [ ] A regra para componentes compartilhados está definida.
-- [ ] Ambientes e variáveis iniciais estão configurados.
-- [ ] A estratégia de comunicação com o Backend está documentada.
-- [ ] Lint/formatter estão configurados.
-- [ ] Build passa.
-- [ ] A arquitetura consegue receber a próxima feature sem reorganização estrutural relevante.
+- [ ] Next.js estiver criado e executando localmente;
+- [ ] a versão utilizada estiver registrada;
+- [ ] a arquitetura de pastas tiver sido estudada, escolhida e justificada;
+- [ ] Cliente e Admin possuírem separação arquitetural clara;
+- [ ] o mapa inicial de rotas estiver documentado;
+- [ ] a estratégia de layouts estiver definida;
+- [ ] a biblioteca de componentes tiver sido estudada e decidida, caso seja adotada;
+- [ ] a estratégia de estilos tiver sido estudada e decidida;
+- [ ] as convenções iniciais estiverem registradas;
+- [ ] a estratégia de ambientes estiver compreendida;
+- [ ] a futura comunicação com Backend estiver conceitualmente definida;
+- [ ] o build passar;
+- [ ] a próxima funcionalidade puder ser iniciada sem reorganização estrutural relevante.
 
 ---
 
 # 17. Perguntas de revisão antes de avançar
 
-Antes de iniciar a Ordem 2, responda sem consultar este documento:
+Antes da próxima ordem, você deve conseguir responder:
 
-1. Por que escolhemos esta arquitetura de pastas?
-2. Qual seria a principal alternativa e por que não a escolhemos?
-3. Onde entra uma nova página do Cliente?
-4. Onde entra uma nova página do Admin?
-5. Como decidir se um componente deve ir para `shared`?
-6. Qual diferença existe entre uma rota estática, dinâmica e uma query parameter?
-7. O que o StoreLayout resolve?
-8. O que o AdminLayout resolve?
-9. Por que não criamos antecipadamente todos os componentes do Design System?
-10. Como o Frontend descobrirá a URL da API em cada ambiente?
-11. Onde deve ficar a responsabilidade de comunicação HTTP?
-12. O que precisa acontecer para considerarmos esta fundação concluída?
-
-Se essas respostas estiverem claras e a implementação atender aos critérios de aceite, a fundação está pronta para sustentar as próximas etapas.
+1. Por que o Next.js foi escolhido para este projeto?
+2. Como o App Router organiza rotas?
+3. Qual arquitetura de pastas foi escolhida e por quê?
+4. Como Cliente e Admin serão separados?
+5. Qual diferença existe entre página e layout no Next.js?
+6. Como funciona uma rota dinâmica?
+7. Qual biblioteca de componentes foi escolhida, se houver, e por quê?
+8. Qual estratégia de estilos foi escolhida e por quê?
+9. O que deve ser compartilhado entre funcionalidades?
+10. Como o Frontend futuramente consumirá dados do Backend?
+11. Como serão tratadas variáveis de ambiente?
+12. O que precisa estar funcionando para considerar a fundação pronta?
 
 ---
 
 # 18. Registro de decisões
 
-Preencher durante o desenvolvimento.
+Preencher durante o estudo e a implementação.
 
 | Decisão | Opções consideradas | Escolha | Motivo | Data |
 |---|---|---|---|---|
-| Framework e versão |  |  |  |  |
+| Framework | Next.js | **Next.js** | Aprendizado prático no projeto | 29/10/2026 |
+| Versão do Next.js |  |  |  |  |
 | Arquitetura de pastas |  |  |  |  |
 | Organização Cliente/Admin |  |  |  |  |
 | Estratégia de rotas |  |  |  |  |
 | Layouts |  |  |  |  |
-| Estratégia de tema |  |  |  |  |
+| Biblioteca de componentes |  |  |  |  |
+| Estratégia de estilos |  |  |  |  |
 | Componentes compartilhados |  |  |  |  |
 | Ambientes |  |  |  |  |
-| Camada de API/services |  |  |  |  |
+| Comunicação com API |  |  |  |  |
 | Estratégia responsiva |  |  |  |  |
 
 ---
