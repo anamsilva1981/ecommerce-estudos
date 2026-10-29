@@ -7,7 +7,7 @@ Este projeto será um **mercado online**, construído com finalidade de estudo p
 A aplicação representará um mercado real no qual:
 
 - o **cliente** poderá acessar a loja, localizar produtos, adicionar itens ao carrinho e realizar uma compra;
-- o **administrador do mercado** poderá cadastrar e manter produtos, controlar estoque e acompanhar os pedidos;
+- o **administrador do mercado** poderá cadastrar e manter produtos, controlar estoque, acompanhar pedidos e visualizar indicadores do negócio;
 - o **Frontend** será responsável por toda a experiência visual e interação nas áreas Cliente e Admin;
 - o **Backend** será responsável por banco de dados, APIs, autenticação, regras de negócio, persistência e integrações.
 
@@ -56,7 +56,7 @@ Exemplos:
 
 ### 3.2. Painel Administrativo — visão do Mercado
 
-É a aplicação usada pela operação do mercado.
+É a aplicação usada pela operação e gestão do mercado.
 
 Exemplos:
 
@@ -66,7 +66,8 @@ Exemplos:
 - estoque;
 - pedidos;
 - clientes;
-- promoções.
+- promoções;
+- dashboard gerencial com indicadores de vendas e desempenho.
 
 > Cliente e Admin pertencem ao mesmo produto, mas possuem objetivos, permissões e interfaces diferentes.
 
@@ -77,7 +78,7 @@ Exemplos:
 | Área | Responsabilidade |
 |---|---|
 | **Frontend** | Interfaces Cliente e Admin, navegação, componentes, formulários, estados da interface, consumo das APIs, responsividade, acessibilidade e testes de interface |
-| **Backend** | APIs, banco de dados, autenticação, autorização, regras de negócio, estoque, carrinho persistido, pedidos, pagamentos e integrações |
+| **Backend** | APIs, banco de dados, autenticação, autorização, regras de negócio, estoque, carrinho persistido, pedidos, pagamentos, indicadores agregados e integrações |
 | **Ambos** | Definição dos contratos das APIs, fluxos funcionais, tratamento de erros, integração e testes de ponta a ponta |
 
 As responsabilidades permanecem fixas durante o projeto: **Frontend não precisa trocar de papel com Backend e vice-versa**.
@@ -86,7 +87,7 @@ As responsabilidades permanecem fixas durante o projeto: **Frontend não precisa
 
 # 5. Módulos do projeto
 
-O escopo inicial será organizado em **18 módulos**.
+O escopo será organizado em **19 módulos funcionais**.
 
 | Nº | Módulo | Principal visão | Implementação | O que resolve |
 |---:|---|---|---|---|
@@ -108,12 +109,13 @@ O escopo inicial será organizado em **18 módulos**.
 | 16 | Promoções | Cliente + Admin | Frontend + Backend | Permite preços promocionais, ofertas e campanhas simples |
 | 17 | Substituição / indisponibilidade | Cliente + Admin | Frontend + Backend | Trata o cenário em que um produto comprado fica indisponível durante a separação |
 | 18 | Qualidade e entrega técnica | Compartilhado | Frontend + Backend | Testes, segurança básica, acessibilidade, CI/CD e deploy |
+| 19 | Dashboard gerencial | Admin / Proprietário | Frontend + Backend | Permite ao dono do mercado acompanhar vendas, evolução do faturamento, pedidos e outros indicadores do negócio |
 
 ---
 
 # 6. Fases do projeto
 
-Os 18 módulos não serão construídos de uma vez. O projeto será evoluído em **3 fases**.
+Os módulos não serão construídos de uma vez. O projeto será evoluído em **3 fases**.
 
 ## Fase 1 — Mercado funcional
 
@@ -170,23 +172,41 @@ Adicionar funcionalidades que tornam a aplicação mais próxima da rotina de um
 
 ---
 
-## Fase 3 — Evolução e qualidade profissional
+## Fase 3 — Evolução, gestão e qualidade profissional
 
 ### Objetivo
 
-Usar o projeto já funcional para estudar preocupações que aparecem em aplicações profissionais.
+Usar o projeto já funcional para estudar gestão do negócio e preocupações que aparecem em aplicações profissionais.
 
 | Ordem | Entrega | Visão | Responsável principal |
 |---:|---|---|---|
-| 24 | Testes unitários ampliados | Compartilhado | Frontend + Backend |
-| 25 | Testes de integração | Compartilhado | Frontend + Backend |
-| 26 | Testes E2E do fluxo de compra | Compartilhado | Frontend + Backend |
-| 27 | Acessibilidade | Cliente + Admin | Frontend |
-| 28 | Performance | Cliente | Frontend + Backend |
-| 29 | Segurança e permissões | Cliente + Admin | Frontend + Backend |
-| 30 | Observabilidade básica | Interno | Backend |
-| 31 | CI/CD | Infraestrutura | Frontend + Backend |
-| 32 | Deploy e ambientes | Infraestrutura | Frontend + Backend |
+| 24 | Dashboard gerencial do proprietário | Admin / Proprietário | Frontend + Backend |
+| 25 | Testes unitários ampliados | Compartilhado | Frontend + Backend |
+| 26 | Testes de integração | Compartilhado | Frontend + Backend |
+| 27 | Testes E2E do fluxo de compra | Compartilhado | Frontend + Backend |
+| 28 | Acessibilidade | Cliente + Admin | Frontend |
+| 29 | Performance | Cliente | Frontend + Backend |
+| 30 | Segurança e permissões | Cliente + Admin | Frontend + Backend |
+| 31 | Observabilidade básica | Interno | Backend |
+| 32 | CI/CD | Infraestrutura | Frontend + Backend |
+| 33 | Deploy e ambientes | Infraestrutura | Frontend + Backend |
+
+### Dashboard gerencial — direção inicial
+
+O dashboard não faz parte do primeiro fluxo de compra. Ele será construído quando o sistema já possuir dados suficientes para gerar informações úteis.
+
+Indicadores candidatos para estudo futuro:
+
+- vendas do dia, semana e mês;
+- comparação de vendas com períodos anteriores;
+- quantidade de pedidos;
+- ticket médio;
+- produtos mais vendidos;
+- produtos com baixo estoque;
+- pedidos por status;
+- evolução de faturamento ao longo do tempo.
+
+A lista definitiva de indicadores será decidida somente quando esta etapa for estudada.
 
 ---
 
@@ -222,9 +242,14 @@ Pedido
    ↓
 ADMIN / MERCADO
 Separação / Atualização do pedido
+   ↓
+DADOS ACUMULADOS
+   ↓
+DASHBOARD GERENCIAL
+Indicadores para o proprietário
 ```
 
-Esse fluxo é importante porque determina boa parte da ordem de desenvolvimento. Antes de a loja do cliente exibir dados reais, precisa existir uma maneira de cadastrá-los e disponibilizá-los pela API.
+Esse fluxo é importante porque determina boa parte da ordem de desenvolvimento. Antes de a loja do cliente exibir dados reais, precisa existir uma maneira de cadastrá-los e disponibilizá-los pela API. Da mesma forma, o dashboard só passa a fazer sentido depois que pedidos, vendas e estoque já geram dados reais ou simulados suficientes para análise.
 
 ---
 
@@ -302,10 +327,10 @@ Esses tópicos poderão ser estudados futuramente se surgirem como uma evoluçã
 
 ## Resumo
 
-O projeto será um **mercado online com 18 módulos funcionais**, dividido em três níveis de evolução:
+O projeto será um **mercado online com 19 módulos funcionais**, dividido em três níveis de evolução:
 
 1. **Mercado funcional** — construir a compra de ponta a ponta;
 2. **Operação realista** — aproximar o sistema do cotidiano de um mercado;
-3. **Qualidade profissional** — estudar testes, segurança, performance, CI/CD e operação.
+3. **Gestão e qualidade profissional** — estudar dashboard gerencial, testes, segurança, performance, CI/CD e operação.
 
 A prioridade não será quantidade de funcionalidades. Será compreender, implementar e integrar corretamente cada parte do sistema.
