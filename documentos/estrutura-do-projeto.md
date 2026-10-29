@@ -1,387 +1,311 @@
-# E-commerce para Estudos — Estrutura e Ordem de Execução
+# Mercado Online para Estudos — Descrição do Projeto
 
-## Objetivo
+## 1. Visão geral
 
-Este documento organiza o projeto de e-commerce em **3 grandes fases de evolução**, deixando explícito:
+Este projeto será um **mercado online**, construído com finalidade de estudo prático de desenvolvimento de software.
 
-- **o que será construído**;
-- **em que ordem**;
-- **em qual visão** a funcionalidade aparece: Cliente, Admin ou ambas;
-- **quem implementa**: Frontend, Backend ou ambos;
-- **por que aquela etapa vem naquele momento**;
-- **de que etapa ela depende**.
+A aplicação representará um mercado real no qual:
 
-A divisão de responsabilidades do projeto é fixa:
+- o **cliente** poderá acessar a loja, localizar produtos, adicionar itens ao carrinho e realizar uma compra;
+- o **administrador do mercado** poderá cadastrar e manter produtos, controlar estoque e acompanhar os pedidos;
+- o **Frontend** será responsável por toda a experiência visual e interação nas áreas Cliente e Admin;
+- o **Backend** será responsável por banco de dados, APIs, autenticação, regras de negócio, persistência e integrações.
 
-- **Frontend:** responsável por toda a aplicação web, incluindo a visão do Cliente e a visão do Admin.
-- **Backend:** responsável por APIs, banco de dados, autenticação, regras de negócio, integrações e persistência.
-
-> Regra principal de execução: **configurar/cadastrar → persistir/expor → consumir → interagir → registrar consequência**.
+O objetivo não é reproduzir uma grande plataforma como KaBuM, Amazon ou Mercado Livre. O projeto será propositalmente menor, mas deverá representar um **produto real e completo**, permitindo estudar como as partes de uma aplicação comercial se relacionam de ponta a ponta.
 
 ---
 
-# Fase 1 — E-commerce Essencial
+## 2. Objetivo de aprendizagem
 
-## Objetivo da fase
+O projeto será usado como laboratório de desenvolvimento.
 
-Entregar um e-commerce funcional de ponta a ponta, no qual a loja consiga cadastrar produtos e o cliente consiga encontrá-los, comprar, pagar e acompanhar o pedido.
+A proposta é não apenas implementar telas, mas entender antes de cada etapa:
 
-| Ordem | Módulo / Entrega | Visão | Responsável | Por que vem aqui | Dependência principal |
-|---:|---|---|---|---|---|
-| 1 | Fundação do projeto: estrutura de pastas, rotas, layout base, tema e design system inicial | Compartilhado | Frontend | Cria a base técnica usada por todas as telas seguintes | Nenhuma |
-| 2 | Header, navbar, footer e componentes básicos reutilizáveis | Cliente / Compartilhado | Frontend | Define a estrutura visual comum da aplicação | Fundação |
-| 3 | Modelagem inicial de produto, categoria, marca, SKU, preço e estoque | Interno | Backend | Define os dados que alimentarão Admin e Cliente | Fundação técnica do backend |
-| 4 | CRUD de categorias | Admin | Frontend + Backend | Produto depende de categoria para ser cadastrado corretamente | Modelagem |
-| 5 | CRUD de marcas | Admin | Frontend + Backend | Permite associar produtos a fabricantes/marcas | Modelagem |
-| 6 | CRUD de produtos | Admin | Frontend + Backend | É a origem dos dados que aparecerão na loja | Categorias e marcas |
-| 7 | Imagens, especificações, preço e SKU do produto | Admin | Frontend + Backend | Completa o cadastro necessário para exibição e compra | CRUD de produtos |
-| 8 | Estoque inicial por SKU | Admin | Frontend + Backend | Define disponibilidade real do produto | Produto/SKU |
-| 9 | API pública/interna de produtos e categorias | Ambas | Backend | Permite que o frontend consuma os produtos cadastrados | CRUD e banco |
-| 10 | Catálogo / listagem de produtos | Cliente | Frontend | Primeira visualização dos dados cadastrados pelo Admin | API de produtos |
-| 11 | Card de produto reutilizável | Cliente | Frontend | Será usado em catálogo, Home, busca e vitrines | API de produtos |
-| 12 | Página de detalhe do produto (PDP) | Cliente | Frontend + Backend | Permite conhecer o produto antes da compra | Catálogo + API |
-| 13 | Busca básica, filtros, ordenação e paginação | Cliente | Frontend + Backend | Facilita descoberta quando o catálogo cresce | Catálogo |
-| 14 | Home com banners, categorias e vitrines | Cliente | Frontend | A Home passa a reutilizar componentes e dados reais já existentes | Card + catálogo + categorias |
-| 15 | Cadastro de cliente | Cliente | Frontend + Backend | Introduz identidade do comprador | Usuários no backend |
-| 16 | Login, logout, sessão e recuperação de senha | Cliente | Frontend + Backend | Permite associar carrinho, endereços e pedidos ao usuário | Cadastro |
-| 17 | Minha conta e dados pessoais | Cliente | Frontend + Backend | Centraliza dados do comprador | Autenticação |
-| 18 | Endereços do cliente | Cliente | Frontend + Backend | O checkout precisa de um destino de entrega | Minha conta |
-| 19 | Gestão básica de clientes | Admin | Frontend + Backend | Permite à operação consultar clientes cadastrados | Usuários |
-| 20 | Carrinho | Cliente | Frontend + Backend | Conecta catálogo ao fluxo de compra | Produto + autenticação opcional |
-| 21 | Validação de preço e estoque no carrinho | Interno | Backend | Evita comprar item indisponível ou com preço desatualizado | Carrinho + estoque |
-| 22 | Gestão de estoque e movimentações básicas | Admin | Frontend + Backend | A operação precisa ajustar e acompanhar disponibilidade | Estoque inicial |
-| 23 | Configuração básica de frete | Admin | Frontend + Backend | Define modalidades, regras, prazo e preço de entrega | Endereços + produtos |
-| 24 | Consulta de CEP e opções de entrega | Cliente | Frontend + Backend | Permite calcular frete antes/finalização da compra | Configuração de frete |
-| 25 | Checkout | Cliente | Frontend | Organiza identificação, endereço, frete, resumo e pagamento | Carrinho + endereço + frete |
-| 26 | Criação do pedido | Interno | Backend | Converte o checkout em uma transação persistida | Checkout |
-| 27 | Confirmação e detalhe do pedido | Cliente | Frontend + Backend | Dá retorno após a compra e permite consulta | Pedido criado |
-| 28 | Meus pedidos | Cliente | Frontend + Backend | Permite acompanhar compras anteriores e atuais | Pedido |
-| 29 | Gestão de pedidos | Admin | Frontend + Backend | A operação precisa consultar e alterar status | Pedido |
-| 30 | Integração de pagamento em sandbox | Interno | Backend | Permite validar o fluxo financeiro sem operação real | Pedido |
-| 31 | Seleção e retorno de pagamento | Cliente | Frontend | Cliente escolhe forma de pagamento e recebe o estado da transação | Gateway/backend |
-| 32 | Atualização de pedido após pagamento | Interno | Backend | Mantém pedido coerente com o status financeiro | Webhook/pagamento |
-| 33 | Baixa/reserva de estoque após compra | Admin / Interno | Backend | Garante consistência entre venda e disponibilidade | Pedido + pagamento |
-| 34 | Segurança básica e separação Cliente/Admin | Ambas | Frontend + Backend | Protege dados e rotas administrativas | Autenticação |
-| 35 | LGPD básica, consentimento e privacidade | Cliente / Interno | Frontend + Backend | Inclui requisitos mínimos de privacidade desde o início | Cadastro/autenticação |
-| 36 | Testes unitários, integração e E2E do fluxo principal | Ambas | Frontend + Backend | Garante que o fluxo crítico funcione antes de evoluir | Funcionalidades da fase |
-| 37 | CI/CD e deploy inicial | Infraestrutura | Frontend + Backend | Automatiza build, testes e entrega | Aplicação funcional |
+1. qual problema aquela parte resolve;
+2. quais alternativas técnicas existem;
+3. quais decisões precisam ser tomadas;
+4. quais dependências existem entre Frontend e Backend;
+5. como implementar;
+6. como validar se a implementação está correta.
 
-## Fluxo principal da Fase 1
-
-```text
-ADMIN
-Categoria / Marca
-      ↓
-Produto / SKU / Preço / Estoque
-      ↓
-BACKEND
-Banco + API
-      ↓
-CLIENTE
-Catálogo → Card → Detalhe → Home
-      ↓
-Autenticação
-      ↓
-Carrinho
-      ↓
-Frete
-      ↓
-Checkout
-      ↓
-Pedido
-      ↓
-Pagamento
-      ↓
-Atualização de estoque
-      ↓
-ADMIN
-Gestão do pedido
-```
+Os documentos detalhados de cada etapa funcionarão como **guias de estudo e execução**.
 
 ---
 
-# Fase 2 — E-commerce Profissional
+## 3. Áreas da aplicação
 
-## Objetivo da fase
+O sistema terá duas experiências principais no Frontend.
 
-Transformar o e-commerce essencial em uma operação mais completa, com relacionamento com o cliente, promoção, pós-venda, conteúdo, administração robusta e inteligência de negócio.
+### 3.1. Loja — visão do Cliente
 
-| Ordem | Módulo / Entrega | Visão | Responsável | Por que vem aqui | Dependência principal |
-|---:|---|---|---|---|---|
-| 38 | Favoritos / wishlist | Cliente | Frontend + Backend | Aumenta retenção e depende de usuário e catálogo já maduros | Cliente + produtos |
-| 39 | Cupons | Cliente / Admin | Frontend + Backend | Introduz regras comerciais sobre carrinho/checkout existentes | Carrinho + preços |
-| 40 | Promoções e campanhas | Cliente / Admin | Frontend + Backend | Evolui preço para regras temporais e segmentadas | Produtos + preços |
-| 41 | Histórico e regras avançadas de preço | Admin / Interno | Frontend + Backend | Dá rastreabilidade e maior controle comercial | Preços/promos |
-| 42 | Avaliações de produtos | Cliente / Admin | Frontend + Backend | Exige cliente, produto e pedido para validar compra | Pedidos entregues |
-| 43 | Perguntas e respostas | Cliente / Admin | Frontend + Backend | Cria interação pré-compra e moderação | Produto + usuário |
-| 44 | Comparador de produtos | Cliente | Frontend + Backend | Usa especificações já consolidadas do catálogo | Produtos/especificações |
-| 45 | Produtos relacionados e similares | Cliente | Frontend + Backend | Cria cross-sell a partir do catálogo existente | Catálogo |
-| 46 | Vistos recentemente | Cliente | Frontend + Backend | Primeira personalização baseada em comportamento | Usuário + produto |
-| 47 | Recomendações básicas | Cliente | Frontend + Backend | Evolui descoberta usando eventos e histórico | Analytics básico |
-| 48 | Notificações transacionais por e-mail | Cliente / Interno | Backend | Automatiza comunicação de pedidos e conta | Pedido + autenticação |
-| 49 | Central de notificações | Cliente | Frontend + Backend | Consolida comunicações dentro da aplicação | Eventos de negócio |
-| 50 | Cancelamento de pedido | Cliente / Admin | Frontend + Backend | Primeiro fluxo relevante de pós-venda | Pedido + pagamento |
-| 51 | Troca e devolução | Cliente / Admin | Frontend + Backend | Expande pós-venda com workflow próprio | Pedido entregue |
-| 52 | Reembolso / estorno | Admin / Interno | Backend | Liga pós-venda ao gateway financeiro | Pagamento + devolução |
-| 53 | Garantia / RMA básico | Cliente / Admin | Frontend + Backend | Completa suporte pós-venda para eletrônicos | Pedido + produto |
-| 54 | Atendimento / tickets | Cliente / Admin | Frontend + Backend | Centraliza solicitações relacionadas à operação | Cliente + pedido |
-| 55 | CMS para banners e vitrines | Admin | Frontend + Backend | Retira conteúdo comercial do código | Home já funcional |
-| 56 | Landing pages e conteúdo institucional | Cliente / Admin | Frontend + Backend | Permite campanhas sem novo deploy | CMS |
-| 57 | Administração de usuários internos | Admin | Frontend + Backend | Necessário quando mais pessoas operam o painel | Autenticação |
-| 58 | Roles e permissões (RBAC) | Admin / Interno | Frontend + Backend | Evita que todos os administradores tenham acesso total | Usuários internos |
-| 59 | Auditoria de ações administrativas | Admin / Interno | Backend | Registra alterações sensíveis | RBAC |
-| 60 | Financeiro operacional | Admin | Frontend + Backend | Consolida recebimentos, taxas, estornos e conciliação | Pedidos/pagamentos |
-| 61 | Fiscal / nota fiscal | Admin / Interno | Backend | Introduz emissão e tratamento fiscal da venda | Pedido pago |
-| 62 | Analytics de produto e funil | Admin | Frontend + Backend | Passa a medir comportamento e conversão | Eventos de uso |
-| 63 | Dashboard de negócio | Admin | Frontend + Backend | Apresenta receita, ticket, conversão e produtos | Analytics |
-| 64 | Marketing e newsletter | Cliente / Admin | Frontend + Backend | Permite aquisição e retenção | Clientes + CMS |
-| 65 | Carrinho abandonado | Cliente / Interno | Backend | Usa comportamento e notificações para recuperação | Carrinho + notificações |
-| 66 | Fidelidade / cashback / pontos | Cliente / Admin | Frontend + Backend | Adiciona retenção com regra financeira própria | Cliente + pedidos |
-| 67 | Acessibilidade completa | Cliente / Admin | Frontend | Consolida WCAG sobre a interface já mais estável | Interfaces consolidadas |
-| 68 | Performance web | Cliente | Frontend | Otimiza experiência conforme conteúdo e tráfego aumentam | Store funcional |
-| 69 | Integrações externas adicionais | Interno | Backend | ERP, CRM, transportadoras e outros sistemas | Domínios consolidados |
-| 70 | Testes profissionais da Fase 2 | Ambas | Frontend + Backend | Aumenta segurança antes de trabalhar escala | Fase 2 funcional |
+É a aplicação usada por quem deseja fazer compras no mercado.
 
----
-
-# Fase 3 — Grande Operação / Escala
-
-## Objetivo da fase
-
-Evoluir o sistema para estudar problemas típicos de grandes operações: volume, concorrência, resiliência, observabilidade, busca especializada, marketplace e arquitetura distribuída.
-
-| Ordem | Módulo / Entrega | Visão | Responsável | Por que vem aqui | Dependência principal |
-|---:|---|---|---|---|---|
-| 71 | Event tracking completo | Interno | Frontend + Backend | Cria base confiável para comportamento, BI e automação | Analytics |
-| 72 | Filas e processamento assíncrono | Interno | Backend | Remove tarefas lentas do fluxo síncrono | Eventos de domínio |
-| 73 | Eventos de domínio | Interno | Backend | Desacopla pedido, pagamento, estoque e notificação | Domínios maduros |
-| 74 | Retry, idempotência e dead-letter queue | Interno | Backend | Garante resiliência em processamento distribuído | Filas/eventos |
-| 75 | Cache com Redis | Interno | Backend | Reduz carga em produtos, categorias e sessões | APIs estáveis |
-| 76 | Estratégias de invalidação de cache | Interno | Backend | Mantém consistência dos dados cacheados | Redis |
-| 77 | CDN e otimização avançada de mídia | Cliente / Infra | Frontend + Infra | Melhora entrega global de assets | Store madura |
-| 78 | Busca com Elasticsearch/OpenSearch | Cliente / Interno | Frontend + Backend | Substitui busca simples por mecanismo especializado | Catálogo grande |
-| 79 | Fuzzy search, sinônimos, ranking e facetas | Cliente | Frontend + Backend | Aproxima a experiência de grandes varejistas | Search engine |
-| 80 | Recomendação avançada | Cliente / Interno | Frontend + Backend | Usa comportamento e histórico em maior escala | Eventos + analytics |
-| 81 | Observabilidade: logs estruturados | Interno | Backend + Infra | Permite diagnóstico consistente | Serviços funcionando |
-| 82 | Métricas e dashboards técnicos | Interno | Backend + Infra | Mede saúde e capacidade | Logs/monitoramento |
-| 83 | Distributed tracing / OpenTelemetry | Interno | Backend + Infra | Necessário quando uma operação atravessa vários serviços | Serviços distribuídos |
-| 84 | Alertas e health checks | Interno | Backend + Infra | Detecta falhas antes de impacto prolongado | Observabilidade |
-| 85 | Testes de carga e performance | Interno | Frontend + Backend | Revela gargalos sob tráfego alto | Observabilidade |
-| 86 | Rate limiting e proteção contra abuso | Interno | Backend | Protege APIs em cenários de grande volume | APIs públicas |
-| 87 | Segurança avançada / OWASP | Ambas | Frontend + Backend | Endurece aplicação antes de exposição maior | Segurança básica |
-| 88 | Antifraude avançado | Interno | Backend | Reduz risco financeiro em alto volume | Pagamentos |
-| 89 | Múltiplos centros de distribuição | Admin / Interno | Frontend + Backend | Adiciona complexidade logística real | Estoque/logística |
-| 90 | Split de estoque e entrega | Cliente / Interno | Frontend + Backend | Permite pedido atendido por mais de um CD | Multi-CD |
-| 91 | Marketplace: cadastro de sellers | Admin / Seller | Frontend + Backend | Abre nova dimensão de negócio | E-commerce maduro |
-| 92 | Produtos e estoque por seller | Admin / Seller | Frontend + Backend | Cada vendedor passa a operar seu catálogo | Sellers |
-| 93 | Pedido dividido por seller | Cliente / Interno | Frontend + Backend | Um carrinho pode originar múltiplos fluxos operacionais | Marketplace |
-| 94 | Comissão e split de pagamento | Admin / Interno | Backend | Implementa economia do marketplace | Seller + pagamento |
-| 95 | Repasses e conciliação de seller | Admin / Seller | Frontend + Backend | Completa o ciclo financeiro do marketplace | Split de pagamento |
-| 96 | Reputação e SLA de seller | Cliente / Admin | Frontend + Backend | Permite governança da operação multi-seller | Marketplace |
-| 97 | Feature flags | Interno | Frontend + Backend | Permite releases graduais e experimentação segura | CI/CD maduro |
-| 98 | Deploy gradual / rollback | Infraestrutura | Frontend + Backend | Reduz risco de releases em produção | CI/CD |
-| 99 | Escalabilidade horizontal | Infraestrutura | Backend + Infra | Suporta crescimento de tráfego | Métricas/carga |
-| 100 | Load balancing | Infraestrutura | Backend + Infra | Distribui tráfego entre instâncias | Escala horizontal |
-| 101 | Banco com réplicas / estratégias de escala | Interno | Backend + Infra | Aumenta capacidade e disponibilidade de persistência | Gargalo comprovado |
-| 102 | Circuit breaker e resiliência | Interno | Backend | Impede falhas em cascata | Serviços distribuídos |
-| 103 | Extração seletiva de microsserviços | Interno | Backend | Só ocorre quando limites e gargalos reais justificarem | Monólito modular maduro |
-| 104 | Testes de contrato | Interno | Frontend + Backend | Protege comunicação entre serviços independentes | Microsserviços/APIs |
-| 105 | Alta disponibilidade e disaster recovery | Infraestrutura | Backend + Infra | Fecha o ciclo de operação em escala | Arquitetura distribuída |
-
----
-
-# Organização das frentes
-
-## Visão do Cliente
-
-Exemplos de funcionalidades dessa frente:
+Exemplos:
 
 - Home;
 - catálogo;
+- categorias;
 - busca;
 - página de produto;
-- autenticação;
-- conta;
-- favoritos;
 - carrinho;
-- frete;
+- login e cadastro;
+- endereços;
 - checkout;
 - pagamento;
-- pedidos;
-- avaliações;
-- perguntas;
-- pós-venda;
-- atendimento.
+- pedidos.
 
-## Visão do Admin
+### 3.2. Painel Administrativo — visão do Mercado
 
-Exemplos de funcionalidades dessa frente:
+É a aplicação usada pela operação do mercado.
 
-- categorias;
-- marcas;
-- produtos;
-- SKU;
-- preços;
+Exemplos:
+
+- cadastro de categorias;
+- cadastro de produtos;
+- controle de preço;
 - estoque;
+- pedidos;
 - clientes;
-- pedidos;
-- frete;
-- promoções;
-- cupons;
-- CMS;
-- avaliações/moderação;
-- pós-venda;
-- usuários internos;
-- permissões;
-- financeiro;
-- fiscal;
-- analytics.
+- promoções.
 
-## Responsabilidade do Frontend
-
-O Frontend implementa as duas experiências visuais:
-
-```text
-frontend
-├── store      # visão do cliente
-├── admin      # visão da operação da loja
-└── shared     # código reutilizado entre as duas frentes
-```
-
-O `shared` não é uma terceira aplicação de negócio. Ele reúne elementos reutilizáveis, como:
-
-- componentes de UI;
-- models/types;
-- services;
-- utilitários;
-- validações;
-- loaders;
-- tratamento visual de erro.
-
-## Responsabilidade do Backend
-
-O Backend é responsável por:
-
-- modelagem de domínio;
-- banco de dados;
-- migrations;
-- APIs;
-- autenticação;
-- autorização;
-- regras de negócio;
-- validação de estoque e preço;
-- pedidos;
-- pagamentos;
-- integrações externas;
-- filas/eventos;
-- persistência;
-- segurança de dados;
-- processamento assíncrono.
+> Cliente e Admin pertencem ao mesmo produto, mas possuem objetivos, permissões e interfaces diferentes.
 
 ---
 
-# Regra de trabalho da dupla
+## 4. Divisão de responsabilidades
 
-Cada funcionalidade deve ser construída como uma **fatia vertical**, mantendo as responsabilidades fixas:
+| Área | Responsabilidade |
+|---|---|
+| **Frontend** | Interfaces Cliente e Admin, navegação, componentes, formulários, estados da interface, consumo das APIs, responsividade, acessibilidade e testes de interface |
+| **Backend** | APIs, banco de dados, autenticação, autorização, regras de negócio, estoque, carrinho persistido, pedidos, pagamentos e integrações |
+| **Ambos** | Definição dos contratos das APIs, fluxos funcionais, tratamento de erros, integração e testes de ponta a ponta |
+
+As responsabilidades permanecem fixas durante o projeto: **Frontend não precisa trocar de papel com Backend e vice-versa**.
+
+---
+
+# 5. Módulos do projeto
+
+O escopo inicial será organizado em **18 módulos**.
+
+| Nº | Módulo | Principal visão | Implementação | O que resolve |
+|---:|---|---|---|---|
+| 1 | Fundação do projeto | Compartilhado | Frontend | Estrutura inicial, arquitetura de pastas, rotas, layouts, tema e base do Design System |
+| 2 | Estrutura visual da loja | Cliente | Frontend | Header, navegação, footer e elementos reutilizáveis da experiência do cliente |
+| 3 | Categorias | Admin + Cliente | Frontend + Backend | Organiza produtos em grupos como bebidas, limpeza, higiene e alimentos |
+| 4 | Produtos | Admin + Cliente | Frontend + Backend | Permite cadastrar, editar, listar e consultar produtos |
+| 5 | Preços | Admin + Cliente | Frontend + Backend | Mantém e apresenta o preço atual de cada produto |
+| 6 | Estoque | Admin + Interno | Frontend + Backend | Controla quantidade disponível e indisponibilidade de produtos |
+| 7 | Catálogo e descoberta | Cliente | Frontend + Backend | Exibe produtos por lista, categoria, busca, filtro e ordenação |
+| 8 | Home e vitrines | Cliente | Frontend + Backend | Apresenta categorias, ofertas e produtos em destaque |
+| 9 | Autenticação | Cliente + Admin | Frontend + Backend | Cadastro, login, sessão, logout e controle de acesso |
+| 10 | Cliente e endereços | Cliente + Admin | Frontend + Backend | Mantém dados pessoais e locais de entrega |
+| 11 | Carrinho | Cliente | Frontend + Backend | Armazena os itens escolhidos, quantidades e resumo da compra |
+| 12 | Entrega | Cliente + Admin | Frontend + Backend | Define área atendida, taxa, modalidade e prazo de entrega |
+| 13 | Checkout | Cliente | Frontend + Backend | Reúne endereço, entrega, itens, valores e confirmação antes da compra |
+| 14 | Pagamento | Cliente + Interno | Frontend + Backend | Registra e acompanha a forma e o estado do pagamento |
+| 15 | Pedidos | Cliente + Admin | Frontend + Backend | Cria a compra e permite acompanhamento pelo cliente e pelo mercado |
+| 16 | Promoções | Cliente + Admin | Frontend + Backend | Permite preços promocionais, ofertas e campanhas simples |
+| 17 | Substituição / indisponibilidade | Cliente + Admin | Frontend + Backend | Trata o cenário em que um produto comprado fica indisponível durante a separação |
+| 18 | Qualidade e entrega técnica | Compartilhado | Frontend + Backend | Testes, segurança básica, acessibilidade, CI/CD e deploy |
+
+---
+
+# 6. Fases do projeto
+
+Os 18 módulos não serão construídos de uma vez. O projeto será evoluído em **3 fases**.
+
+## Fase 1 — Mercado funcional
+
+### Objetivo
+
+Construir o menor fluxo completo capaz de representar uma compra real.
+
+### Resultado esperado
+
+Ao final desta fase:
+
+> **o mercado cadastra um produto → o cliente encontra o produto → adiciona ao carrinho → informa onde receber → finaliza a compra → o mercado recebe o pedido.**
+
+| Ordem | Entrega | Visão | Responsável principal |
+|---:|---|---|---|
+| 1 | [Fundação do projeto](./fase-1/01-fundacao-do-projeto.md) | Compartilhado | Frontend |
+| 2 | Estrutura visual da loja | Cliente | Frontend |
+| 3 | Categorias | Admin + Cliente | Frontend + Backend |
+| 4 | Produtos | Admin + Cliente | Frontend + Backend |
+| 5 | Preços | Admin + Cliente | Frontend + Backend |
+| 6 | Estoque básico | Admin + Interno | Frontend + Backend |
+| 7 | Catálogo e página de produto | Cliente | Frontend + Backend |
+| 8 | Home com produtos reais | Cliente | Frontend + Backend |
+| 9 | Carrinho | Cliente | Frontend + Backend |
+| 10 | Cliente e endereço de entrega | Cliente | Frontend + Backend |
+| 11 | Entrega básica | Cliente + Admin | Frontend + Backend |
+| 12 | Checkout | Cliente | Frontend + Backend |
+| 13 | Pedido | Cliente + Admin | Frontend + Backend |
+
+### Observação
+
+Pagamento real não precisa bloquear a primeira versão. Inicialmente, o pedido pode ser criado com uma forma de pagamento simulada ou controlada em ambiente de teste.
+
+---
+
+## Fase 2 — Operação realista de mercado
+
+### Objetivo
+
+Adicionar funcionalidades que tornam a aplicação mais próxima da rotina de um mercado real.
+
+| Ordem | Entrega | Visão | Responsável principal |
+|---:|---|---|---|
+| 14 | Autenticação completa | Cliente + Admin | Frontend + Backend |
+| 15 | Minha conta e histórico | Cliente | Frontend + Backend |
+| 16 | Gestão de clientes | Admin | Frontend + Backend |
+| 17 | Pagamento integrado em sandbox | Cliente + Interno | Frontend + Backend |
+| 18 | Gestão completa de pedidos | Admin | Frontend + Backend |
+| 19 | Movimentação de estoque | Admin | Frontend + Backend |
+| 20 | Promoções e ofertas | Cliente + Admin | Frontend + Backend |
+| 21 | Tratamento de item indisponível | Cliente + Admin | Frontend + Backend |
+| 22 | Substituição de produtos | Cliente + Admin | Frontend + Backend |
+| 23 | Busca, filtros e ordenação aprimorados | Cliente | Frontend + Backend |
+
+---
+
+## Fase 3 — Evolução e qualidade profissional
+
+### Objetivo
+
+Usar o projeto já funcional para estudar preocupações que aparecem em aplicações profissionais.
+
+| Ordem | Entrega | Visão | Responsável principal |
+|---:|---|---|---|
+| 24 | Testes unitários ampliados | Compartilhado | Frontend + Backend |
+| 25 | Testes de integração | Compartilhado | Frontend + Backend |
+| 26 | Testes E2E do fluxo de compra | Compartilhado | Frontend + Backend |
+| 27 | Acessibilidade | Cliente + Admin | Frontend |
+| 28 | Performance | Cliente | Frontend + Backend |
+| 29 | Segurança e permissões | Cliente + Admin | Frontend + Backend |
+| 30 | Observabilidade básica | Interno | Backend |
+| 31 | CI/CD | Infraestrutura | Frontend + Backend |
+| 32 | Deploy e ambientes | Infraestrutura | Frontend + Backend |
+
+---
+
+# 7. Fluxo geral do sistema
 
 ```text
-Definir funcionalidade
-        ↓
-Alinhar contrato Front ↔ Back
-        ↓
-Frontend implementa Cliente/Admin
-        +
-Backend implementa API/regra/banco
-        ↓
-Integrar
-        ↓
-Testar
-        ↓
-Fechar a funcionalidade
-        ↓
-Ir para a próxima dependência
+ADMIN / MERCADO
+
+Categoria
+   ↓
+Produto
+   ↓
+Preço
+   ↓
+Estoque
+   ↓
+BACKEND / API
+   ↓
+CLIENTE
+Home / Catálogo
+   ↓
+Produto
+   ↓
+Carrinho
+   ↓
+Endereço / Entrega
+   ↓
+Checkout
+   ↓
+Pagamento
+   ↓
+Pedido
+   ↓
+ADMIN / MERCADO
+Separação / Atualização do pedido
 ```
 
-Não é recomendado construir todo o frontend e somente depois começar todo o backend. O ideal é fechar uma funcionalidade de ponta a ponta antes de avançar.
+Esse fluxo é importante porque determina boa parte da ordem de desenvolvimento. Antes de a loja do cliente exibir dados reais, precisa existir uma maneira de cadastrá-los e disponibilizá-los pela API.
+
+---
+
+# 8. Estratégia de execução
+
+O projeto será construído em **fatias funcionais**, e não com todo o Frontend primeiro e todo o Backend depois.
 
 Exemplo:
 
 ```text
-Categorias
-   ↓
-Produtos
-   ↓
-Catálogo
-   ↓
-Detalhe
-   ↓
-Home
+Produto
+
+Admin Frontend → formulário e tela de produtos
+Backend → modelo, banco, regras e API
+Cliente Frontend → catálogo e detalhe
+Integração → teste do fluxo completo
 ```
 
-Depois:
-
-```text
-Autenticação
-   ↓
-Carrinho
-   ↓
-Frete
-   ↓
-Checkout
-   ↓
-Pedido
-   ↓
-Pagamento
-```
+Somente depois de uma fatia estar funcionando de ponta a ponta o projeto avança para dependências posteriores.
 
 ---
 
-# Resumo das três fases
+# 9. Documentação de aprendizagem e execução
 
-| Fase | Objetivo | Resultado esperado |
-|---|---|---|
-| **Fase 1 — Essencial** | Construir o fluxo de venda ponta a ponta | Loja cadastra; cliente encontra, compra e acompanha |
-| **Fase 2 — Profissional** | Completar operação, experiência e gestão | Promoções, avaliações, pós-venda, CMS, financeiro, BI etc. |
-| **Fase 3 — Escala** | Estudar problemas de grandes operações | Eventos, filas, cache, busca avançada, marketplace e sistemas distribuídos |
+Este documento descreve **o projeto e seu escopo**.
 
-## Princípio arquitetural
+Cada etapa terá um documento próprio explicando **como estudá-la, decidir e executá-la**.
 
-O projeto deve começar como um **monólito modular bem estruturado**, evitando introduzir microsserviços sem necessidade.
-
-Exemplo inicial:
+Esses documentos deverão seguir, sempre que fizer sentido, a estrutura:
 
 ```text
-commerce
-├── catalog
-├── customers
-├── cart
-├── inventory
-├── checkout
-├── orders
-├── payments
-├── shipping
-├── promotions
-└── reviews
+Entender
+   ↓
+Conhecer alternativas
+   ↓
+Comparar
+   ↓
+Tomar decisões
+   ↓
+Registrar decisões
+   ↓
+Implementar
+   ↓
+Validar
 ```
 
-Somente na Fase 3, quando houver motivos técnicos reais para estudar desacoplamento, determinados módulos poderão ser extraídos para serviços independentes.
+O primeiro guia é:
+
+- [01 — Fundação do projeto](./fase-1/01-fundacao-do-projeto.md)
+
+Os próximos guias serão criados conforme o projeto avançar, evitando definir prematuramente decisões que dependem de etapas anteriores.
 
 ---
 
-# Resultado final da trilha
+# 10. O que não faz parte do escopo inicial
 
-A evolução planejada é:
+Para manter o projeto adequado ao objetivo de estudo, inicialmente não serão tratados como prioridade:
 
-```text
-CRUD e API
-    ↓
-E-commerce funcional
-    ↓
-E-commerce profissional
-    ↓
-Operação orientada a eventos
-    ↓
-Alta escala e sistemas distribuídos
-```
+- marketplace com vários vendedores;
+- sistema de reputação de vendedores;
+- programa complexo de fidelidade;
+- recomendação por inteligência artificial;
+- múltiplos centros de distribuição;
+- arquitetura de microsserviços;
+- filas e arquitetura distribuída avançada;
+- busca com Elasticsearch/OpenSearch;
+- antifraude avançado;
+- ERP completo;
+- operação fiscal complexa;
+- escala de grandes varejistas.
 
-Assim, o projeto funciona simultaneamente como **produto de e-commerce** e como **trilha prática de estudos de engenharia de software**.
+Esses tópicos poderão ser estudados futuramente se surgirem como uma evolução natural do projeto.
+
+---
+
+## Resumo
+
+O projeto será um **mercado online com 18 módulos funcionais**, dividido em três níveis de evolução:
+
+1. **Mercado funcional** — construir a compra de ponta a ponta;
+2. **Operação realista** — aproximar o sistema do cotidiano de um mercado;
+3. **Qualidade profissional** — estudar testes, segurança, performance, CI/CD e operação.
+
+A prioridade não será quantidade de funcionalidades. Será compreender, implementar e integrar corretamente cada parte do sistema.
